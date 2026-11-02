@@ -69,10 +69,23 @@ class HMM:
                 best_prob = prob
         return best_path, best_prob, sum_joint
 
+    def viterbi(self, x):
+        v = {i: {} for i in range(len(x))}
+        back = {i: {} for i in range(len(x))}
+        for state in self.states:
+            v[0][state] = self.log_pi[state] + self.log_e[state][x[0]]
+            back[0][state] = ''
+        for i in range(1, len(x)):
+            for k in self.states:
+                transition_list = [v[i-1][state] + self.log_a[state][k] for state in self.states]
+                max_index = transition_list.index(max(transition_list))
+                back[i][k] = self.states[max_index]
+                v[i][k] = self.log_e[k][x[i]] + max(transition_list)
 
 
 
 if __name__ == "__main__":
+    print('--- TASK 1 ---')
     m = read_model("weather_model.json")
     m1 = read_model("toy_model.json")
     print(m1.a)
@@ -82,3 +95,4 @@ if __name__ == "__main__":
     print(HMM.log_joint(m, 'sr', 'HL'))
     print(HMM.brute_force(m, 'ssrssrrrss'))
 
+    print('--- TASK 2 ---')
